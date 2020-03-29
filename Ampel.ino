@@ -20,7 +20,8 @@ unsigned long zeit = 0;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
+  Serial.begin(9600);
+  
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_ROT_A, OUTPUT);
   pinMode(LED_GELB_A, OUTPUT);
@@ -29,7 +30,8 @@ void setup() {
   pinMode(LED_GELB_F, OUTPUT);
   pinMode(LED_GRUEN_F, OUTPUT);
   pinMode(LED_KNOPF, OUTPUT);
-  pinMode(KNOPF, INPUT);
+  pinMode(KNOPF, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(KNOPF), druecken, FALLING);
 
   // LED Test
   digitalWrite(LED_ROT_A, HIGH);
@@ -52,11 +54,11 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
 
-  pinMode(KNOPF, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(KNOPF), druecken, CHANGE);
+  gedrueckt = false;  // erster Knopfdruck löschen (Interrupt wird bei jedem Start einmal ausgeführt)
 }
 
 void druecken() {
+  Serial.println("Knopf gedrückt");
   if (!gedrueckt) {
     gedrueckt = true;
     digitalWrite(LED_KNOPF, HIGH);
