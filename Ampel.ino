@@ -11,6 +11,7 @@
 #define LED_GELB_F 5
 #define LED_GRUEN_F 4
 
+#define LED_KNOPF 3
 #define KNOPF 2
 
 bool blinken = true;
@@ -27,6 +28,7 @@ void setup() {
   pinMode(LED_ROT_F, OUTPUT);
   pinMode(LED_GELB_F, OUTPUT);
   pinMode(LED_GRUEN_F, OUTPUT);
+  pinMode(LED_KNOPF, OUTPUT);
   pinMode(KNOPF, INPUT);
 
   // LED Test
@@ -36,6 +38,7 @@ void setup() {
   digitalWrite(LED_ROT_F, HIGH);
   digitalWrite(LED_GELB_F, HIGH);
   digitalWrite(LED_GRUEN_F, HIGH);
+  digitalWrite(LED_KNOPF, HIGH);
   digitalWrite(LED_BUILTIN, HIGH);
   delay(2000);
   
@@ -45,6 +48,7 @@ void setup() {
   digitalWrite(LED_ROT_F, LOW);
   digitalWrite(LED_GELB_F, LOW);
   digitalWrite(LED_GRUEN_F, LOW);
+  digitalWrite(LED_KNOPF, LOW);
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
 
@@ -55,6 +59,7 @@ void setup() {
 void druecken() {
   if (!gedrueckt) {
     gedrueckt = true;
+    digitalWrite(LED_KNOPF, HIGH);
     digitalWrite(LED_BUILTIN, HIGH);
   }
 }
@@ -99,6 +104,7 @@ void loop() {
     digitalWrite(LED_ROT_F, LOW);
     digitalWrite(LED_GELB_F, LOW);
     digitalWrite(LED_GRUEN_F, HIGH);
+    digitalWrite(LED_KNOPF, LOW);
     digitalWrite(LED_BUILTIN, LOW);
     delay(10000);
 
