@@ -91,7 +91,7 @@ void loop() {
     digitalWrite(LED_ROT_A, LOW);
     digitalWrite(LED_GELB_A, HIGH);
     digitalWrite(LED_GRUEN_A, LOW);
-    delay(5000);
+    delay(4000);
 
     // Auto und Fussgänger Rot
     digitalWrite(LED_ROT_A, HIGH);
@@ -100,7 +100,7 @@ void loop() {
     digitalWrite(LED_ROT_F, HIGH);
     digitalWrite(LED_GELB_F, LOW);
     digitalWrite(LED_GRUEN_F, LOW);
-    delay(5000);
+    delay(4000);
 
     // Fussgänger Grün
     digitalWrite(LED_ROT_F, LOW);
@@ -114,20 +114,20 @@ void loop() {
     digitalWrite(LED_ROT_F, LOW);
     digitalWrite(LED_GELB_F, HIGH);
     digitalWrite(LED_GRUEN_F, LOW);
-    delay(5000);
+    delay(4000);
 
     // Fussgänger Rot
     digitalWrite(LED_ROT_F, HIGH);
     digitalWrite(LED_GELB_F, LOW);
     digitalWrite(LED_GRUEN_F, LOW);
     gedrueckt = false; // ab jetzt kann man wieder drücken
-    delay(3000);
+    delay(2000);
 
     // Auto Rot+Orange
     digitalWrite(LED_ROT_A, HIGH);
     digitalWrite(LED_GELB_A, HIGH);
     digitalWrite(LED_GRUEN_A, LOW);
-    delay(3000);
+    delay(2000);
 
     // Auto Grün
     digitalWrite(LED_ROT_A, LOW);
@@ -135,7 +135,7 @@ void loop() {
     digitalWrite(LED_GRUEN_A, HIGH);
 
     // nächste Fussgängerphase frühestens in 15 Sekunden
-    zeit = millis() + 15000;
+    zeit = millis() + 12000;
   }
   
 }
