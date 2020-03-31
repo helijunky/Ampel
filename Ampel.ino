@@ -21,7 +21,6 @@
 // Definition der Variablen
 bool blinken = true;
 volatile bool gedrueckt = false;
-unsigned long zeit = 0;
 
 
 // die setup Funktion wird beim Start einmal ausgeführt
@@ -72,7 +71,7 @@ void setup() {
 
 // Interrupt-Funktion wird aufgerufen, sobald der Knopf gedrückt wird
 void druecken() {
-  Serial.println("Knopf gedrückt"); // zum Debuggen
+  Serial.println("Knopf gedrückt");   // zum Debuggen
   if (!gedrueckt) {
     gedrueckt = true;                 // merken, dass Knopf gedrückt wurde
     digitalWrite(LED_KNOPF, HIGH);    // die LED im Knopf einschalten
@@ -83,22 +82,20 @@ void druecken() {
 
 // die loop Funktion wird immer wieder ausgeführt
 void loop() {
-
+  
   // Blinken der orangen LEDs
-  if (blinken) {
+  if (blinken) {                        // wenn Blinken aktiv ist (nach dem Einschalten)
     digitalWrite(LED_AUTO_GELB, HIGH);  // gelbe LED für Auto einschalten
     digitalWrite(LED_FUSSG_GELB, HIGH); // gelbe LED für Fussgänger einschalten
     digitalWrite(LED_BUILTIN, HIGH);    // kleine LED auf dem Arduino einschalten
     delay(750);                         // 750 Millisekunden warten
     digitalWrite(LED_AUTO_GELB, LOW);   // gelbe LED für Auto ausschalten
     digitalWrite(LED_FUSSG_GELB, LOW);  // gelbe LED für Fussgänger ausschalten
-    if (!gedrueckt) {
-      digitalWrite(LED_BUILTIN, LOW);   // kleine LED auf dem Arduino nur ausschalten, wenn Knopf nicht gedrückt wurde
-    }
+    digitalWrite(LED_BUILTIN, LOW);     // kleine LED auf dem Arduino ausschalten
     delay(750);                         // 750 Millisekunden warten
   }
 
-  if (gedrueckt && millis() > zeit) {   // wenn gedrückt wurde und die Sperrzeit abgelaufen ist...
+  if (gedrueckt) {                      // wenn gedrückt wurde
     if (blinken) {                      // wenn noch Blinken aktiv ist (nach dem Einschalten)
       blinken = false;                  // Blinken ausschalten
       
@@ -156,9 +153,7 @@ void loop() {
     digitalWrite(LED_AUTO_ROT, LOW);
     digitalWrite(LED_AUTO_GELB, LOW);
     digitalWrite(LED_AUTO_GRUEN, HIGH);
-
-    // nächste Fussgängerphase frühestens in 12 Sekunden möglich
-    zeit = millis() + 12000;          // aktuelle Zeit + 12 Sekunden merken
+    delay(12000);                       // 12 Sekunden warten
   }
   
 }
