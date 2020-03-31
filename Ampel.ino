@@ -3,24 +3,39 @@
 
  Manuel Haag
  März 2020
+
+ Funktionsweise
+ --------------
+ Beim Start (oder nach RESET) blinken beide Ampeln orange.
+ Sobald der Knopf bei der Fussgängerampel gedrückt wird, schalten zuerst
+ beide Ampeln auf Rot, danach folgt die Grünphase für Fussgänger
+ (10 Sekunden).
+ Danach stellt die Fussgängerampel auf Rot und die Autos bekommen grün
+ (zeitlich unbeschränkt).
+ Bei erneutem Drücken des Knopfes erfolgt wieder eine Grünphase für die
+ Fussgänger. Die Grünphase für Autos dauert jedoch mindestens 12 Sekunden
+ (falls der Knopf zu früh gedrückt wird).
  
 */
 
-// Definition der Ein- und Ausgänge
-#define LED_AUTO_ROT 9
-#define LED_AUTO_GELB 8
-#define LED_AUTO_GRUEN 7
+// Definition der Namen für Ein- und Ausgänge am Arduino
+#define LED_AUTO_ROT 9              // Ausgang 9 für Auto Rot
+#define LED_AUTO_GELB 8             // Ausgang 8 für Auto Gelb
+#define LED_AUTO_GRUEN 7            // Ausgang 7 für Auto Grün
 
-#define LED_FUSSG_ROT 6
-#define LED_FUSSG_GELB 5
-#define LED_FUSSG_GRUEN 4
+#define LED_FUSSG_ROT 6             // Ausgang 6 für Fussgänger Rot
+#define LED_FUSSG_GELB 5            // Ausgang 5 für Fussgänger Gelb
+#define LED_FUSSG_GRUEN 4           // Ausgang 4 für Fussgänger Grün
 
-#define LED_KNOPF 3
-#define KNOPF 2
+#define LED_KNOPF 3                 // Ausgang 3 für LED in Knopf
+#define KNOPF 2                     // Eingang 2 für Knopf
 
-// Definition der Variablen
-bool blinken = true;
-volatile bool gedrueckt = false;
+// Variablen
+bool blinken = true;                // true:  Blinken eingeschaltet
+                                    // false: Blinken ausgeschaltet
+
+volatile bool gedrueckt;            // true:  Knopf wurde gedrückt
+                                    // false: Knopf nicht gedrückt
 
 
 // die setup Funktion wird beim Start einmal ausgeführt
@@ -40,7 +55,8 @@ void setup() {
   // der Knopf wird als Eingang definiert
   pinMode(KNOPF, INPUT_PULLUP);
 
-  // sobald der Knopf gedrückt wird, wird die Funktion "druecken" aufgerufen (Interrupt-Funktion)
+  // sobald der Knopf gedrückt wird, wird die Funktion "druecken" aufgerufen
+  // (Interrupt-Funktion)
   attachInterrupt(digitalPinToInterrupt(KNOPF), druecken, FALLING);
 
   // zum Testen werden alle LEDs kurz eingeschaltet
@@ -65,17 +81,18 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
 
-  gedrueckt = false;  // erster Knopfdruck löschen (Interrupt wird bei jedem Start einmal ausgeführt)
+  gedrueckt = false;  // erster Knopfdruck löschen (Interrupt wird bei jedem Start
+                      // einmal ausgeführt)
 }
 
 
 // Interrupt-Funktion wird aufgerufen, sobald der Knopf gedrückt wird
 void druecken() {
-  Serial.println("Knopf gedrückt");   // zum Debuggen
-  if (!gedrueckt) {
-    gedrueckt = true;                 // merken, dass Knopf gedrückt wurde
-    digitalWrite(LED_KNOPF, HIGH);    // die LED im Knopf einschalten
-    digitalWrite(LED_BUILTIN, HIGH);  // die kleine LED auf dem Arduino einschalten
+  Serial.println("Knopf gedrückt");     // zum Debuggen
+  if (!gedrueckt) {                     // falls noch nicht gedrückt wurde...
+    gedrueckt = true;                   // sich merken, dass der Knopf gedrückt wurde
+    digitalWrite(LED_KNOPF, HIGH);      // LED im Knopf einschalten
+    digitalWrite(LED_BUILTIN, HIGH);    // kleine LED auf dem Arduino einschalten
   }
 }
 
@@ -84,19 +101,20 @@ void druecken() {
 void loop() {
   
   // Blinken der orangen LEDs
-  if (blinken) {                        // wenn Blinken aktiv ist (nach dem Einschalten)
+  if (blinken) {                        // wenn Blinken aktiv ist
     digitalWrite(LED_AUTO_GELB, HIGH);  // gelbe LED für Auto einschalten
     digitalWrite(LED_FUSSG_GELB, HIGH); // gelbe LED für Fussgänger einschalten
     digitalWrite(LED_BUILTIN, HIGH);    // kleine LED auf dem Arduino einschalten
     delay(750);                         // 750 Millisekunden warten
+    
     digitalWrite(LED_AUTO_GELB, LOW);   // gelbe LED für Auto ausschalten
     digitalWrite(LED_FUSSG_GELB, LOW);  // gelbe LED für Fussgänger ausschalten
     digitalWrite(LED_BUILTIN, LOW);     // kleine LED auf dem Arduino ausschalten
     delay(750);                         // 750 Millisekunden warten
   }
 
-  if (gedrueckt) {                      // wenn gedrückt wurde
-    if (blinken) {                      // wenn noch Blinken aktiv ist (nach dem Einschalten)
+  if (gedrueckt) {                      // wenn gedrückt wurde...
+    if (blinken) {                      // wenn noch Blinken aktiv ist...
       blinken = false;                  // Blinken ausschalten
       
       // Fussgänger Ampel auf Orange stellen
