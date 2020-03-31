@@ -1,55 +1,67 @@
 /*
- Ampel
+ Ampelsteuerung mit Arduino
+
+ Manuel Haag
+ März 2020
  
 */
 
-#define LED_ROT_A 9
-#define LED_GELB_A 8
-#define LED_GRUEN_A 7
+// Definition der Ein- und Ausgänge
+#define LED_AUTO_ROT 9
+#define LED_AUTO_GELB 8
+#define LED_AUTO_GRUEN 7
 
-#define LED_ROT_F 6
-#define LED_GELB_F 5
-#define LED_GRUEN_F 4
+#define LED_FUSSG_ROT 6
+#define LED_FUSSG_GELB 5
+#define LED_FUSSG_GRUEN 4
 
 #define LED_KNOPF 3
 #define KNOPF 2
 
+// Definition der Variablen
 bool blinken = true;
 volatile bool gedrueckt = false;
 unsigned long zeit = 0;
 
-// the setup function runs once when you press reset or power the board
+
+// die setup Funktion wird beim Start einmal ausgeführt
 void setup() {
-  Serial.begin(9600);
-  
+  Serial.begin(9600); // zum Debuggen
+
+  // alle LEDs werden als Ausgang definiert
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED_ROT_A, OUTPUT);
-  pinMode(LED_GELB_A, OUTPUT);
-  pinMode(LED_GRUEN_A, OUTPUT);
-  pinMode(LED_ROT_F, OUTPUT);
-  pinMode(LED_GELB_F, OUTPUT);
-  pinMode(LED_GRUEN_F, OUTPUT);
+  pinMode(LED_AUTO_ROT, OUTPUT);
+  pinMode(LED_AUTO_GELB, OUTPUT);
+  pinMode(LED_AUTO_GRUEN, OUTPUT);
+  pinMode(LED_FUSSG_ROT, OUTPUT);
+  pinMode(LED_FUSSG_GELB, OUTPUT);
+  pinMode(LED_FUSSG_GRUEN, OUTPUT);
   pinMode(LED_KNOPF, OUTPUT);
+
+  // der Knopf wird als Eingang definiert
   pinMode(KNOPF, INPUT_PULLUP);
+
+  // sobald der Knopf gedrückt wird, wird die Funktion "druecken" aufgerufen (Interrupt-Funktion)
   attachInterrupt(digitalPinToInterrupt(KNOPF), druecken, FALLING);
 
-  // LED Test
-  digitalWrite(LED_ROT_A, HIGH);
-  digitalWrite(LED_GELB_A, HIGH);
-  digitalWrite(LED_GRUEN_A, HIGH);
-  digitalWrite(LED_ROT_F, HIGH);
-  digitalWrite(LED_GELB_F, HIGH);
-  digitalWrite(LED_GRUEN_F, HIGH);
+  // zum Testen werden alle LEDs kurz eingeschaltet
+  digitalWrite(LED_AUTO_ROT, HIGH);
+  digitalWrite(LED_AUTO_GELB, HIGH);
+  digitalWrite(LED_AUTO_GRUEN, HIGH);
+  digitalWrite(LED_FUSSG_ROT, HIGH);
+  digitalWrite(LED_FUSSG_GELB, HIGH);
+  digitalWrite(LED_FUSSG_GRUEN, HIGH);
   digitalWrite(LED_KNOPF, HIGH);
   digitalWrite(LED_BUILTIN, HIGH);
   delay(2000);
-  
-  digitalWrite(LED_ROT_A, LOW);
-  digitalWrite(LED_GELB_A, LOW);
-  digitalWrite(LED_GRUEN_A, LOW);
-  digitalWrite(LED_ROT_F, LOW);
-  digitalWrite(LED_GELB_F, LOW);
-  digitalWrite(LED_GRUEN_F, LOW);
+
+  // und wieder ausgeschaltet
+  digitalWrite(LED_AUTO_ROT, LOW);
+  digitalWrite(LED_AUTO_GELB, LOW);
+  digitalWrite(LED_AUTO_GRUEN, LOW);
+  digitalWrite(LED_FUSSG_ROT, LOW);
+  digitalWrite(LED_FUSSG_GELB, LOW);
+  digitalWrite(LED_FUSSG_GRUEN, LOW);
   digitalWrite(LED_KNOPF, LOW);
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
@@ -57,85 +69,96 @@ void setup() {
   gedrueckt = false;  // erster Knopfdruck löschen (Interrupt wird bei jedem Start einmal ausgeführt)
 }
 
+
+// Interrupt-Funktion wird aufgerufen, sobald der Knopf gedrückt wird
 void druecken() {
-  Serial.println("Knopf gedrückt");
+  Serial.println("Knopf gedrückt"); // zum Debuggen
   if (!gedrueckt) {
-    gedrueckt = true;
-    digitalWrite(LED_KNOPF, HIGH);
-    digitalWrite(LED_BUILTIN, HIGH);
+    gedrueckt = true;                 // merken, dass Knopf gedrückt wurde
+    digitalWrite(LED_KNOPF, HIGH);    // die LED im Knopf einschalten
+    digitalWrite(LED_BUILTIN, HIGH);  // die kleine LED auf dem Arduino einschalten
   }
 }
 
-// the loop function runs over and over again forever
+
+// die loop Funktion wird immer wieder ausgeführt
 void loop() {
+
+  // Blinken der orangen LEDs
   if (blinken) {
-    digitalWrite(LED_GELB_A, HIGH);
-    digitalWrite(LED_GELB_F, HIGH);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(750);
-    digitalWrite(LED_GELB_A, LOW);
-    digitalWrite(LED_GELB_F, LOW);
+    digitalWrite(LED_AUTO_GELB, HIGH);  // gelbe LED für Auto einschalten
+    digitalWrite(LED_FUSSG_GELB, HIGH); // gelbe LED für Fussgänger einschalten
+    digitalWrite(LED_BUILTIN, HIGH);    // kleine LED auf dem Arduino einschalten
+    delay(750);                         // 750 Millisekunden warten
+    digitalWrite(LED_AUTO_GELB, LOW);   // gelbe LED für Auto ausschalten
+    digitalWrite(LED_FUSSG_GELB, LOW);  // gelbe LED für Fussgänger ausschalten
     if (!gedrueckt) {
-      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(LED_BUILTIN, LOW);   // kleine LED auf dem Arduino nur ausschalten, wenn Knopf nicht gedrückt wurde
     }
-    delay(750);
+    delay(750);                         // 750 Millisekunden warten
   }
 
-  if (gedrueckt && millis() > zeit) {
-    if (blinken) {
-      blinken = false;
-      // Fussgänger Orange (nur beim ersten mal)
-      digitalWrite(LED_GELB_F, HIGH);
+  if (gedrueckt && millis() > zeit) {   // wenn gedrückt wurde und die Sperrzeit abgelaufen ist...
+    if (blinken) {                      // wenn noch Blinken aktiv ist (nach dem Einschalten)
+      blinken = false;                  // Blinken ausschalten
+      
+      // Fussgänger Ampel auf Orange stellen
+      digitalWrite(LED_FUSSG_ROT, LOW);
+      digitalWrite(LED_FUSSG_GELB, HIGH);
+      digitalWrite(LED_FUSSG_GRUEN, LOW);
     }
-    // Auto Orange
-    digitalWrite(LED_ROT_A, LOW);
-    digitalWrite(LED_GELB_A, HIGH);
-    digitalWrite(LED_GRUEN_A, LOW);
-    delay(4000);
+    
+    // Auto Ampel auf Orange stellen
+    digitalWrite(LED_AUTO_ROT, LOW);
+    digitalWrite(LED_AUTO_GELB, HIGH);
+    digitalWrite(LED_AUTO_GRUEN, LOW);
+    delay(4000);                        // 4 Sekunden warten
 
-    // Auto und Fussgänger Rot
-    digitalWrite(LED_ROT_A, HIGH);
-    digitalWrite(LED_GELB_A, LOW);
-    digitalWrite(LED_GRUEN_A, LOW);
-    digitalWrite(LED_ROT_F, HIGH);
-    digitalWrite(LED_GELB_F, LOW);
-    digitalWrite(LED_GRUEN_F, LOW);
-    delay(4000);
+    // Auto Ampel auf Rot stellen
+    digitalWrite(LED_AUTO_ROT, HIGH);
+    digitalWrite(LED_AUTO_GELB, LOW);
+    digitalWrite(LED_AUTO_GRUEN, LOW);
 
-    // Fussgänger Grün
-    digitalWrite(LED_ROT_F, LOW);
-    digitalWrite(LED_GELB_F, LOW);
-    digitalWrite(LED_GRUEN_F, HIGH);
-    digitalWrite(LED_KNOPF, LOW);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(10000);
+    // Fussgänger Ampel auf Rot stellen
+    digitalWrite(LED_FUSSG_ROT, HIGH);
+    digitalWrite(LED_FUSSG_GELB, LOW);
+    digitalWrite(LED_FUSSG_GRUEN, LOW);
+    delay(4000);                        // 4 Sekunden warten
 
-    // Fussgänger Orange
-    digitalWrite(LED_ROT_F, LOW);
-    digitalWrite(LED_GELB_F, HIGH);
-    digitalWrite(LED_GRUEN_F, LOW);
-    delay(4000);
+    // Fussgänger Ampel auf Grün stellen
+    digitalWrite(LED_FUSSG_ROT, LOW);
+    digitalWrite(LED_FUSSG_GELB, LOW);
+    digitalWrite(LED_FUSSG_GRUEN, HIGH);
+    digitalWrite(LED_KNOPF, LOW);       // LED im Knopf ausschalten
+    digitalWrite(LED_BUILTIN, LOW);     // kleine LED ausschalten
+    delay(10000);                       // 10 Sekunden warten
 
-    // Fussgänger Rot
-    digitalWrite(LED_ROT_F, HIGH);
-    digitalWrite(LED_GELB_F, LOW);
-    digitalWrite(LED_GRUEN_F, LOW);
-    gedrueckt = false; // ab jetzt kann man wieder drücken
-    delay(2000);
+    // Fussgänger Ampel auf Orange stellen
+    digitalWrite(LED_FUSSG_ROT, LOW);
+    digitalWrite(LED_FUSSG_GELB, HIGH);
+    digitalWrite(LED_FUSSG_GRUEN, LOW);
+    delay(4000);                        // 4 Sekunden warten
 
-    // Auto Rot+Orange
-    digitalWrite(LED_ROT_A, HIGH);
-    digitalWrite(LED_GELB_A, HIGH);
-    digitalWrite(LED_GRUEN_A, LOW);
-    delay(2000);
+    // Fussgänger Ampel auf Rot stellen
+    digitalWrite(LED_FUSSG_ROT, HIGH);
+    digitalWrite(LED_FUSSG_GELB, LOW);
+    digitalWrite(LED_FUSSG_GRUEN, LOW);
+    gedrueckt = false;                  // ab jetzt kann man wieder drücken
+    delay(2000);                        // 2 Sekunden warten
 
-    // Auto Grün
-    digitalWrite(LED_ROT_A, LOW);
-    digitalWrite(LED_GELB_A, LOW);
-    digitalWrite(LED_GRUEN_A, HIGH);
+    // Auto Ampel auf Rot+Orange stellen
+    digitalWrite(LED_AUTO_ROT, HIGH);
+    digitalWrite(LED_AUTO_GELB, HIGH);
+    digitalWrite(LED_AUTO_GRUEN, LOW);
+    delay(2000);                        // 2 Sekunden warten
 
-    // nächste Fussgängerphase frühestens in 15 Sekunden
-    zeit = millis() + 12000;
+    // Auto Ampel auf Grün stellen
+    digitalWrite(LED_AUTO_ROT, LOW);
+    digitalWrite(LED_AUTO_GELB, LOW);
+    digitalWrite(LED_AUTO_GRUEN, HIGH);
+
+    // nächste Fussgängerphase frühestens in 12 Sekunden möglich
+    zeit = millis() + 12000;          // aktuelle Zeit + 12 Sekunden merken
   }
   
 }
