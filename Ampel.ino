@@ -13,7 +13,7 @@
  Danach stellt die Fussgängerampel auf Rot und die Autos bekommen grün
  (zeitlich unbeschränkt).
  Bei erneutem Drücken des Knopfes erfolgt wieder eine Grünphase für die
- Fussgänger. Die Grünphase für Autos dauert jedoch mindestens 12 Sekunden
+ Fussgänger. Die Grünphase für Autos dauert jedoch mindestens 10 Sekunden
  (falls der Knopf zu früh gedrückt wird).
  
 */
@@ -105,12 +105,12 @@ void loop() {
     digitalWrite(LED_AUTO_GELB, HIGH);  // gelbe LED für Auto einschalten
     digitalWrite(LED_FUSSG_GELB, HIGH); // gelbe LED für Fussgänger einschalten
     digitalWrite(LED_BUILTIN, HIGH);    // kleine LED auf dem Arduino einschalten
-    delay(750);                         // 750 Millisekunden warten
+    delay(700);                         // 700 Millisekunden warten
     
     digitalWrite(LED_AUTO_GELB, LOW);   // gelbe LED für Auto ausschalten
     digitalWrite(LED_FUSSG_GELB, LOW);  // gelbe LED für Fussgänger ausschalten
     digitalWrite(LED_BUILTIN, LOW);     // kleine LED auf dem Arduino ausschalten
-    delay(750);                         // 750 Millisekunden warten
+    delay(700);                         // 700 Millisekunden warten
   }
 
   if (gedrueckt) {                      // wenn gedrückt wurde...
@@ -127,7 +127,7 @@ void loop() {
     digitalWrite(LED_AUTO_ROT, LOW);
     digitalWrite(LED_AUTO_GELB, HIGH);
     digitalWrite(LED_AUTO_GRUEN, LOW);
-    delay(4000);                        // 4 Sekunden warten
+    delay(3000);                        // 3 Sekunden warten
 
     // Auto Ampel auf Rot stellen
     digitalWrite(LED_AUTO_ROT, HIGH);
@@ -138,7 +138,7 @@ void loop() {
     digitalWrite(LED_FUSSG_ROT, HIGH);
     digitalWrite(LED_FUSSG_GELB, LOW);
     digitalWrite(LED_FUSSG_GRUEN, LOW);
-    delay(4000);                        // 4 Sekunden warten
+    delay(2000);                        // 2 Sekunden warten
 
     // Fussgänger Ampel auf Grün stellen
     digitalWrite(LED_FUSSG_ROT, LOW);
@@ -152,7 +152,7 @@ void loop() {
     digitalWrite(LED_FUSSG_ROT, LOW);
     digitalWrite(LED_FUSSG_GELB, HIGH);
     digitalWrite(LED_FUSSG_GRUEN, LOW);
-    delay(4000);                        // 4 Sekunden warten
+    delay(3000);                        // 3 Sekunden warten
 
     // Fussgänger Ampel auf Rot stellen
     digitalWrite(LED_FUSSG_ROT, HIGH);
@@ -171,7 +171,7 @@ void loop() {
     digitalWrite(LED_AUTO_ROT, LOW);
     digitalWrite(LED_AUTO_GELB, LOW);
     digitalWrite(LED_AUTO_GRUEN, HIGH);
-    delay(12000);                       // 12 Sekunden warten
+    delay(10000);                       // 10 Sekunden warten
   }
   
 }
